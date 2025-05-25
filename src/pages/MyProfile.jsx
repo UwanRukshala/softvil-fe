@@ -108,7 +108,7 @@ const MyProfile = () => {
             {/* Attending Events Section */}
             <div>
                 <h2 className="text-xl font-semibold mb-4">Attending Events</h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-4 gap-6">
                     {attendingEvents.length > 0 ? (
                         attendingEvents.map((event) => <MyEventCard key={event.id} event={event} />)
                     ) : (

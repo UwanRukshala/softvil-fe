@@ -1,16 +1,17 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { loginUser } from '../reducers/user/userSlice';
 import axios from 'axios';
-import { USER_LOGIN, VERIFY_OTP } from '../config/urls';
+import { REGISTER_USER, USER_LOGIN, VERIFY_OTP } from '../config/urls';
+import { ROLES } from '../auth/utils/roles';
 
-export default function Login() {
+export default function SignUp() {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const [message, setMessage] = useState('');
     const [email, setEmail] = useState('');
-    const [otp, setOtp] = useState('');
+    const [name, setName] = useState('');
     const [showOtpSection, setShowOtpSection] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
@@ -18,25 +19,28 @@ export default function Login() {
 
     const isEmailValid = /\S+@\S+\.\S+/.test(email);
 
-    const handleLogin = async (e) => {
+    const handleSignUp = async (e) => {
         e.preventDefault();
         setIsLoading(true);
         setError('');
 
         try {
             if (!showOtpSection) {
-                // First step: Send email to get OTP
-                const res = await axios.post(`${USER_LOGIN}?email=${email}`);
-                if (res.status === 200) {
-                    setShowOtpSection(true);
-                    setMessage(res.data?.message)
+            
+                const res = await axios.post(`${REGISTER_USER}`, {
+                    "username": name,
+                    "email": email,
+                    "role": ROLES.USER
+                });
+                if (res.status === 201) {
+                    window.location='/login'
                 }
             } else {
                 // Second step: Verify OTP
                 try {
                     const res = await axios.post(VERIFY_OTP, {
                         email,
-                        otp,
+                        otp: name,
                     });
 
                     if (res.status === 200) {
@@ -99,12 +103,12 @@ export default function Login() {
                         className="mx-auto h-10 w-auto"
                     />
                     <h2 className="mt-10 text-center text-2xl/9 font-bold tracking-tight text-white">
-                        {showOtpSection ? 'Verify OTP' : 'Sign in to your account'}
+                        {showOtpSection ? 'Verify OTP' : 'Sign Up to your account'}
                     </h2>
                 </div>
 
                 <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-                    <form onSubmit={handleLogin} noValidate method="POST" className="space-y-6">
+                    <form onSubmit={handleSignUp} noValidate method="POST" className="space-y-6">
                         <div>
                             <label htmlFor="email" className="block text-sm/6 font-medium text-white">
                                 Email address
@@ -119,41 +123,24 @@ export default function Login() {
                                     required
                                     disabled={showOtpSection}
                                     autoComplete="email"
+                                    placeholder="Enter Email Here"
                                     className={`block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm/6 ${showOtpSection ? 'opacity-70 cursor-not-allowed' : ''}`}
                                 />
                             </div>
-                        </div>
-
-                        {showOtpSection && (
-                            <div>
-                                <label htmlFor="otp" className="block text-sm/6 font-medium text-white">
-                                    OTP Verification Code
-                                </label>
-                                <div className="mt-2">
-                                    <input
-                                        id="otp"
-                                        name="otp"
-                                        type="text"
-                                        value={otp}
-                                        onChange={(e) => setOtp(e.target.value)}
-                                        required
-                                        autoComplete="off"
-                                        className="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm/6"
-                                        placeholder="Enter 6-digit OTP"
-                                    />
-                                </div>
-                                <div className="mt-2 text-right">
-                                    <button
-                                        type="button"
-                                        onClick={handleResendOtp}
-                                        disabled={isLoading}
-                                        className="text-sm text-indigo-400 hover:text-indigo-300"
-                                    >
-                                        Resend OTP
-                                    </button>
-                                </div>
+                            <div className="mt-2">
+                                <input
+                                    id="name"
+                                    name="name"
+                                    type="text"
+                                    value={name}
+                                    onChange={(e) => setName(e.target.value)}
+                                    required
+                                    autoComplete="off"
+                                    className="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm/6"
+                                    placeholder="Enter Name Here"
+                                />
                             </div>
-                        )}
+                        </div>
 
 
                         {message && (
@@ -175,11 +162,7 @@ export default function Login() {
                             >
                                 {isLoading ? (
                                     'Processing...'
-                                ) : showOtpSection ? (
-                                    'Verify & Login'
-                                ) : (
-                                    'Sign in'
-                                )}
+                                ) : "Sign Up"}
                             </button>
                         </div>
                     </form>
@@ -187,11 +170,6 @@ export default function Login() {
                     {touched.email && !isEmailValid && (
                         <p className="mt-10 text-center text-sm/6 text-gray-400">Enter a valid email.</p>
                     )}
-                    <div className='mt-6'>
-                    <Link to={"/signup"}><span className='text-sm text-white py-3 font-light'>Sign Up From Here</span></Link>
-                    </div>
-
-
                 </div>
             </div>
         </>

@@ -8,6 +8,7 @@ import EventDetails from "../pages/EventDetails";
 import EventManagement from "../pages/EventManagement";
 import UserManagement from "../pages/UserManagement";
 import MyProfile from "../pages/MyProfile";
+import SignUp from "../pages/SignUp";
 
 const AppRouter = () => {
     const { user } = useSelector((state) => state.user);
@@ -15,6 +16,7 @@ const AppRouter = () => {
 
     return (
         <Routes>
+            <Route path="/signup" element={user ? <Navigate to="/" /> : <SignUp />} />
             <Route path="/login" element={user ? <Navigate to="/" /> : <Login />} />
             <Route path="/" element={<PrivateRoute element={<MainLayout />} />}>
                 <Route index element={<Dashboard />} />

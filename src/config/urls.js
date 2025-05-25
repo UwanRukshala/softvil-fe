@@ -6,6 +6,7 @@ const backendHost=apiUrl+baseRoute;
 export const USER_LOGIN=backendHost+"/auth/initiate-login";
 export const VERIFY_OTP=backendHost+"/auth/verify-otp";
 export const GET_ALL_USERS=backendHost+"/users";
+export const REGISTER_USER=backendHost+"/users/register";
 export const REGISTER_USER_BY_ADMIN=backendHost+"/users/registerByAdmin";
 export const GET_USER_BY_ROLE=backendHost+"/users/by-role";
 export const GET_ALL_EVENTS_BY_FILTER=backendHost+"/events";
