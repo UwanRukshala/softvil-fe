@@ -11,8 +11,8 @@ const Sidebar = ({ isOpen, onClose }) => {
 
   const navLinks = [
     { label: 'Dashboard', to: '/', icon: <HomeIcon size={18} />, onlyForAdmin: false },
-    { label: 'Add/Edit Events', to: '/events/manage', icon: <Calendar1Icon size={18} />, onlyForAdmin: false },
-    { label: 'My Profile', to: '/profile/123', icon: <User2Icon size={18} />, onlyForAdmin: false },
+    { label: 'Add/Edit Events', to: '/events/manage', icon: <Calendar1Icon size={18} />, onlyForAdmin: true },
+    { label: 'My Profile', to: '/myprofile', icon: <User2Icon size={18} />, onlyForAdmin: false },
     { label: 'Register Users', to: '/users/manage', icon: <UserSquare2Icon size={18} />, onlyForAdmin: true },
   ];
 
@@ -22,26 +22,26 @@ const Sidebar = ({ isOpen, onClose }) => {
   };
 
   const renderLinks = () => (
-  <nav className="flex flex-col gap-2 mt-4">
-    {navLinks
-      .filter(link => !link.onlyForAdmin || user.isAdmin)
-      .map(({ label, to, icon }) => (
-        <Link
-          key={to}
-          to={to}
-          onClick={onClose}
-          className={`flex items-center gap-4 px-4 py-3 rounded transition-colors
+    <nav className="flex flex-col gap-2 mt-4">
+      {navLinks
+        .filter(link => !link.onlyForAdmin || user.isAdmin || user.isHost )
+        .map(({ label, to, icon }) => (
+          <Link
+            key={to}
+            to={to}
+            onClick={onClose}
+            className={`flex items-center gap-4 px-4 py-3 rounded transition-colors
             ${location.pathname === to
-              ? 'bg-indigo-500 font-semibold text-white rounded-xl'
-              : 'text-gray-200 hover:bg-gray-600 hover:rounded-xl'
-            }`}
-        >
-          {icon}
-          {label}
-        </Link>
-      ))}
-  </nav>
-);
+                ? 'bg-[#3b82f6] font-semibold text-white rounded-xl'
+                : 'text-gray-200 hover:bg-gray-600 hover:rounded-xl'
+              }`}
+          >
+            {icon}
+            {label}
+          </Link>
+        ))}
+    </nav>
+  );
 
   return (
     <>
@@ -51,15 +51,16 @@ const Sidebar = ({ isOpen, onClose }) => {
           <img src="/logo.png" alt="event-manager-logo" className="w-8 h-auto rounded" />
           <h2 className="text-xl font-bold text-gray-100 font-sans">Events Manager</h2>
         </div>
-        <div className='mt-10'></div>
-        {renderLinks()}
 
-        <button
-          onClick={handleLogout}
-          className='bg-amber-700 cursor-pointer'
-        >
-          Logout
-        </button>
+        {renderLinks()}
+        <div className='mt-10 flex w-full'>
+          <button
+            onClick={handleLogout}
+            className='bg-amber-700 cursor-pointer py-3 rounded-2xl w-full'
+          >
+            Logout
+          </button>
+        </div>
       </aside>
 
       {/* Mobile Sidebar */}
@@ -76,13 +77,14 @@ const Sidebar = ({ isOpen, onClose }) => {
             <hr className="border-t border-zinc-700 my-2" />
             {renderLinks()}
           </div>
-
-          <button
-            onClick={handleLogout}
-            className='bg-amber-700 cursor-pointer'
-          >
-            Logout
-          </button>
+          <div className='mt-10 flex w-full'>
+            <button
+              onClick={handleLogout}
+              className='bg-amber-700 cursor-pointer py-3 rounded-2xl w-full'
+            >
+              Logout
+            </button>
+          </div>
         </div>
       )}
 

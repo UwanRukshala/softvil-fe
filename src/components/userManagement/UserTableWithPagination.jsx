@@ -6,13 +6,14 @@ export const UserTableWithPagination = ({
     searchTerm,
     onEditUser,
     onDeleteUser,
-    onPageChange
+    onPageChange,
+    itemsPerPage
 }) => {
 
     const allUsers = useSelector(state => state.user.allUsers)
 
     const [currentPage, setCurrentPage] = useState(0);
-    const itemsPerPage = 10; // Should match your default backend size
+ 
 
     // Calculate the current items to display
     const filteredUsers = allUsers.content.filter(user =>
@@ -36,7 +37,7 @@ export const UserTableWithPagination = ({
                         <th className="px-4 py-3 text-left text-sm font-semibold">Email</th>
                         <th className="px-4 py-3 text-left text-sm font-semibold">Role</th>
                         <th className="px-4 py-3 text-left text-sm font-semibold">Status</th>
-                        <th className="px-4 py-3 text-left text-sm font-semibold"><span className="sr-only">Action</span></th>
+                      
                     </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-600">
@@ -54,20 +55,7 @@ export const UserTableWithPagination = ({
                                     {user.status ? 'Active' : 'Inactive'}
                                 </span>
                             </td>
-                            <td className="px-4 py-3 text-right">
-                                <button
-                                    onClick={() => onEditUser(user)}
-                                    className="mr-2 text-blue-400 hover:text-blue-300"
-                                >
-                                    Edit
-                                </button>
-                                <button
-                                    onClick={() => onDeleteUser(user.id)}
-                                    className="text-red-400 hover:text-red-300"
-                                >
-                                    Delete
-                                </button>
-                            </td>
+                          
                         </tr>
                     ))}
                 </tbody>

@@ -7,6 +7,7 @@ export const useAuth = () => {
     return {
         isAdmin: user?.role === ROLES.ADMIN,
         isUser: user?.role === ROLES.USER,
+        isHost: user?.role === ROLES.HOST,
         userId: user?.id,
         userEmail: user?.email,
     };

@@ -4,15 +4,13 @@ import { useForm } from 'react-hook-form';
 import api from '../../config/axiosConfig';
 import { ADD_EVENT } from '../../config/urls';
 import { VISIBILITY } from '../../auth/utils/visibility';
+import { addEvent } from '../../reducers/event/eventsSlice';
 
 function AddEventModal({ isOpen, onClose, hosts }) {
     const dispatch = useDispatch();
 
     const { register, handleSubmit, reset, formState: { errors } } = useForm();
     if (!isOpen) return null;
-
-
-
 
     const handleClose = () => {
         reset();
@@ -31,10 +29,11 @@ function AddEventModal({ isOpen, onClose, hosts }) {
                 location: data.location,
                 visibility: data.visibility,
             };
-   
-            const response = await api.post(ADD_EVENT, newEvent);
 
-            // dispatch(addEvent(response.data));
+            const response = await api.post(ADD_EVENT, newEvent);
+            if (response.status == 201) {
+                dispatch(addEvent(response.data));
+            }
             handleClose();
         } catch (error) {
             console.error('Error creating event:', error);
@@ -47,7 +46,7 @@ function AddEventModal({ isOpen, onClose, hosts }) {
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur  min-w-full">
-            <div className="relative bg-[#222323] rounded-lg p-6 w-full max-w-2xl text-black shadow-lg overflow-y-auto max-h-[90vh]">
+            <div className="relative bg-gray-900 rounded-lg p-6 w-full max-w-2xl text-black shadow-lg overflow-y-auto max-h-[90vh]">
                 <button
                     onClick={handleClose}
                     className="absolute top-3 right-3 text-white hover:text-red-400 text-xl font-bold"

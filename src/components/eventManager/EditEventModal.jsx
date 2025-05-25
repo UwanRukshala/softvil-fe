@@ -47,7 +47,7 @@ function EditEventModal({ isOpen, onClose, hosts, eventData, onSubmitUpdate }) {
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur min-w-full">
-            <div className="relative bg-[#222323] rounded-lg p-6 w-full max-w-2xl text-black shadow-lg overflow-y-auto max-h-[90vh]">
+            <div className="relative bg-gray-900 rounded-lg p-6 w-full max-w-2xl text-black shadow-lg overflow-y-auto max-h-[90vh]">
                 <button
                     onClick={handleClose}
                     className="absolute top-3 right-3 text-white hover:text-red-400 text-xl font-bold"

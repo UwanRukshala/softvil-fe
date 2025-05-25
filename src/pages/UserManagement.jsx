@@ -23,7 +23,7 @@ const UserManagement = () => {
 
     const [searchTerm, setSearchTerm] = useState('');
     const [currentPage, setCurrentPage] = useState(0);
-    const itemsPerPage = 10;
+    const itemsPerPage = 5;
 
     const handleEditUser = (user) => {
         setCurrentUser(user);
@@ -137,6 +137,7 @@ const UserManagement = () => {
                     onEditUser={handleEditUser}
                     onDeleteUser={handleDeleteUser}
                     onPageChange={handlePageChange}
+                    itemsPerPage={itemsPerPage}
                 />
 
             </div>

@@ -3,11 +3,10 @@ import ReactPaginate from 'react-paginate';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 
-export const EventsTableWithPagination = ({ searchTerm, onEditEvent, onPageChange,removeEvent }) => {
+export const EventsTableWithPagination = ({ searchTerm, onEditEvent, onPageChange, removeEvent, itemsPerPage ,setSearchTerm}) => {
     const allEvents = useSelector(state => state.events.allEvents);
 
     const [currentPage, setCurrentPage] = useState(0);
-    const itemsPerPage = 10;
 
     // New filters
     const [hostFilter, setHostFilter] = useState('');
@@ -42,8 +41,15 @@ export const EventsTableWithPagination = ({ searchTerm, onEditEvent, onPageChang
 
     return (
         <div className="-mx-4 mt-8 sm:-mx-0 overflow-x-auto">
-           
+
             <div className="mb-4 flex flex-wrap gap-4 px-0">
+                <input
+                    type="text"
+                    placeholder="Search events..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="border border-gray-600 bg-transparent text-white px-3 py-1 rounded"
+                />
                 <input
                     type="text"
                     placeholder="Filter by host"
@@ -76,7 +82,9 @@ export const EventsTableWithPagination = ({ searchTerm, onEditEvent, onPageChang
                         <th className="px-4 py-3 text-left text-sm font-semibold">End Time</th>
                         <th className="px-4 py-3 text-left text-sm font-semibold">Location</th>
                         <th className="px-4 py-3 text-left text-sm font-semibold">Host</th>
+                        <th className="px-4 py-3 text-left text-sm font-semibold">Visibility</th>
                         <th className="px-4 py-3 text-left text-sm font-semibold">Attendee Count</th>
+                        <th className="px-4 py-3 text-left text-sm font-semibold">Maybe Count</th>
                         <th className="px-4 py-3 text-left text-sm font-semibold"><span className="sr-only">Action</span></th>
                     </tr>
                 </thead>
@@ -89,7 +97,9 @@ export const EventsTableWithPagination = ({ searchTerm, onEditEvent, onPageChang
                             <td className="px-4 py-3 text-white text-sm">{new Date(event.endTime).toLocaleString()}</td>
                             <td className="px-4 py-3 text-white text-sm">{event.location}</td>
                             <td className="px-4 py-3 text-white text-sm">{event.hostName}</td>
+                            <td className="px-4 py-3 text-white text-sm">{event.visibility}</td>
                             <td className="px-4 py-3 text-white text-sm">{event.attendeeCount}</td>
+                            <td className="px-4 py-3 text-white text-sm">{event.maybeCount}</td>
                             <td className="px-4 py-3 text-sm space-x-2">
                                 <button
                                     onClick={() => onEditEvent(event)}

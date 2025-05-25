@@ -27,7 +27,7 @@ const eventsSlice = createSlice({
     },
     reducers: {
         addEvent: (state, action) => {
-            state.allEvents.content.unshift(newUser);
+            state.allEvents.content.unshift(action.payload);
             state.allEvents.totalElements += 1;
         },
         setAllEvents: (state, action) => {

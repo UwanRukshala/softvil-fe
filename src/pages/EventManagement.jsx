@@ -4,9 +4,9 @@ import { Link } from "react-router-dom";
 import AddEventModal from "../components/eventManager/AddEventModal";
 import EditEventModal from "../components/eventManager/EditEventModal";
 import { toast } from 'react-hot-toast';
-import { fetchAllEvents } from "../reducers/event/eventsSlice";
+import { fetchAllEvents, setAllEvents } from "../reducers/event/eventsSlice";
 import { WithAdminComp } from "../auth/hocs/WithAdminComp";
-import { DELETE_EVENT, GET_USER_BY_ROLE, UPDATE_EVENT } from "../config/urls";
+import { DELETE_EVENT, GET_ALL_EVENTS_BY_FILTER, GET_USER_BY_ROLE, UPDATE_EVENT } from "../config/urls";
 import { ROLES } from "../auth/utils/roles";
 import api from "../config/axiosConfig";
 import { EventsTableWithPagination } from "../components/eventManager/EventsTableWithPagination";
@@ -22,23 +22,34 @@ export default function EventManagement() {
     const [hosts, setHosts] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [currentPage, setCurrentPage] = useState(0);
-    const itemsPerPage = 10;
-
+    const itemsPerPage = 3;
+    const [filters, setFilters] = useState({
+        location: "",
+        visibility: "",
+        from: "",
+        to: ""
+    });
+    const defaultFilters = {
+        location: "",
+        visibility: "",
+        from: "",
+        to: ""
+    };
     const removeEvent = async (event) => {
-    const confirmed = window.confirm(`Are you sure you want to delete the event "${event.title}"?`);
-    if (!confirmed) return;
+        const confirmed = window.confirm(`Are you sure you want to delete the event "${event.title}"?`);
+        if (!confirmed) return;
 
-    try {
-        await api.delete(`${DELETE_EVENT}/${event.id}`);
-        toast.success('Event deleted successfully');
+        try {
+            await api.delete(`${DELETE_EVENT}/${event.id}`);
+            toast.success('Event deleted successfully');
 
-        // Refresh list (if you're using pagination, include currentPage, itemsPerPage)
-        dispatch(fetchAllEvents({ page: currentPage, size: itemsPerPage, visibility: VISIBILITY.ALL }));
-    } catch (error) {
-        console.error("Failed to delete event:", error);
-        toast.error('Failed to delete event');
-    }
-};
+            // Refresh list (if you're using pagination, include currentPage, itemsPerPage)
+            dispatch(fetchAllEvents({ page: currentPage, size: itemsPerPage, visibility: VISIBILITY.ALL }));
+        } catch (error) {
+            console.error("Failed to delete event:", error);
+            toast.error('Failed to delete event');
+        }
+    };
     const handlePageChange = (newPage) => {
         setCurrentPage(newPage);
     };
@@ -68,6 +79,36 @@ export default function EventManagement() {
             toast.error('Failed to update event');
         }
     };
+    const fetchEvents = async (page = 0, filters = {}) => {
+        try {
+            const params = new URLSearchParams({
+                page,
+                size: itemsPerPage,
+                ...filters,
+            });
+
+            const res = await api.get(`${GET_ALL_EVENTS_BY_FILTER}?${params.toString()}`);
+            dispatch(
+                setAllEvents(res.data)
+            )
+        } catch (err) {
+            console.error("Error fetching events", err);
+        }
+    };
+    const handleFilterChange = (e) => {
+        setFilters({ ...filters, [e.target.name]: e.target.value });
+    };
+
+    const applyFilters = () => {
+        setCurrentPage(0);
+        fetchEvents(0, filters);
+    };
+
+    const clearFilters = () => {
+        setFilters(defaultFilters);
+        setCurrentPage(0);
+        fetchEvents(0, defaultFilters);
+    };
 
     useEffect(() => {
         fetchHosts();
@@ -79,7 +120,7 @@ export default function EventManagement() {
 
     return (
         <>
-            <div className="px-4 sm:px-6 lg:px-8 py-6 rounded-lg bg-[#363939] mx-6 my-6">
+            <div className="px-4 sm:px-6 lg:px-8 py-6 rounded-lg bg-gray-900 mx-6 my-6">
                 <div className="flex justify-between items-center sm:flex sm:items-center sm:justify-start">
                     <div className="sm:flex-auto">
                         <h2 className="text-xl font-bold text-white">Manage Events</h2>
@@ -97,19 +138,72 @@ export default function EventManagement() {
                     </div>
                 </div>
 
-                <input
-                    type="text"
-                    placeholder="Search events..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="mt-4 w-full sm:w-96 px-3 py-2 border border-gray-400 rounded-md text-white"
-                />
+             
+
+                <div className="my-5 bg-gray-700 p-3 rounded-xl">
+                    <p className="text-base font-bold pb-3">Advanced Filter</p>
+
+                    <div className="flex flex-wrap gap-4 mb-6">
+                        <input
+                            type="text"
+                            name="location"
+                            placeholder="Location"
+                            className="px-3 py-2 rounded text-white bg-gray-800"
+                            value={filters.location}
+                            onChange={handleFilterChange}
+                        />
+                        <select
+                            name="visibility"
+                            className="px-3 py-2 rounded text-white  bg-gray-800"
+                            value={filters.visibility}
+                            onChange={handleFilterChange}
+                        >
+                            <option value="">All</option>
+                            <option value="PUBLIC">Public</option>
+                            <option value="PRIVATE">Private</option>
+                        </select>
+                        <input
+                            type="date"
+                            name="from"
+                            className="px-3 py-2 rounded text-white bg-gray-800"
+                            value={filters.from}
+                            onChange={handleFilterChange}
+                        />
+                        <input
+                            type="date"
+                            name="to"
+                            className="px-3 py-2 rounded text-white bg-gray-800"
+                            value={filters.to}
+                            onChange={handleFilterChange}
+                        />
+
+
+                        <button
+                            onClick={applyFilters}
+                            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                        >
+                            Apply Filters
+                        </button>
+
+                        <button
+                            onClick={clearFilters}
+                            className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700"
+                        >
+                            Clear Filters
+                        </button>
+
+                    </div>
+
+
+                </div>
 
                 <EventsTableWithPagination
                     searchTerm={searchTerm}
                     onEditEvent={handleEditEvent}
                     onPageChange={handlePageChange}
                     removeEvent={removeEvent}
+                    itemsPerPage={itemsPerPage}
+                    setSearchTerm={setSearchTerm}
                 />
             </div>
 
@@ -125,7 +219,7 @@ export default function EventManagement() {
                 eventData={selectedEvent}
                 hosts={hosts}
                 onSubmitUpdate={handleEventUpdate}
-                
+
             />
         </>
     );
